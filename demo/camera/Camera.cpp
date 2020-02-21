@@ -16,9 +16,9 @@ Camera::Camera()
 
 Camera::~Camera()
 {
-    if (_userValue != 0)
+    if (_userHandle != 0)
     {
-        CLIENT_Logout(_userValue);
+        CLIENT_Logout(_userHandle);
     }
 
     CLIENT_Cleanup();
@@ -36,6 +36,11 @@ void CALLBACK Camera::AutoConnectFunc(LLONG lLoginID, char *pchDVRIP, LONG nDVRP
     LOG(ERROR) << "AutoConnectFunc...";
 }
 
+void CALLBACK Camera::RealDataCallBackEx2(LLONG lRealHandle, DWORD dwDataType, BYTE *pBuffer, DWORD dwBufSize, LLONG param, LDWORD dwUser)
+{
+    LOG(INFO)<<"real data buf size: "<<dwBufSize;
+}
+
 bool Camera::Open(std::string ip)
 {
     BOOL bRet = CLIENT_Init(DisConnectFunc, 0);
@@ -44,19 +49,29 @@ bool Camera::Open(std::string ip)
         LOG(ERROR) << "Initialize SDK failed";
         return false;
     }
+    LOG(INFO) << "Initialize SDK success";
 
     CLIENT_SetAutoReconnect(AutoConnectFunc, 0);
 
     NET_DEVICEINFO deviceInfo = {0};
-    _userValue = CLIENT_Login(ip.c_str(), 37777,
+    _userHandle = CLIENT_Login(ip.c_str(), 37777,
                               "admin", "admin", &deviceInfo);
-    if (_userValue == 0)
+    if (_userHandle == 0)
     {
         LOG(ERROR) << "Camera login failed";
         return false;
     }
 
     LOG(INFO) << "Camera login success";
+
+    _realPlayHandle = CLIENT_RealPlay(_userHandle, 0, NULL);
+    if(_realPlayHandle == 0)
+    {
+        LOG(ERROR) << "Camera play failed";
+        return false;
+    }
+
+    CLIENT_SetRealDataCallBackEx2(_realPlayHandle, RealDataCallBackEx2, 0, 0x0f);
 
     return true;
 }
