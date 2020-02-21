@@ -4,36 +4,44 @@
 
 namespace camera
 {
+
 Camera::Camera()
 {
+    if(false){ std::cout<<el::base::consts::kPerformanceLoggerId<<std::endl; }
     LOG(INFO) << "init class Camera";
 }
 
 Camera::~Camera()
 {
+    CLIENT_Cleanup();
+
     LOG(INFO) << "release class Camera";
 }
 
-void CALLBACK Camera::DisConnectFunc(LONG lLoginID, char *pchDVRIP,
-                                     LONG nDVRPort, DWORD dwUser)
+void CALLBACK Camera::DisConnectFunc(LLONG lLoginID, char *pchDVRIP, LONG nDVRPort, LDWORD dwUser)
 {
-    LOG(INFO) << "Camera disconnect";
+    LOG(ERROR) << "DisConnectFunc...";
 }
 
-void CALLBACK Camera::AutoConnectFunc(LONG lLoginID, char *pchDVRIP,
-                              LONG nDVRPort, DWORD dwUser)
+void CALLBACK Camera::AutoConnectFunc(LLONG lLoginID, char *pchDVRIP, LONG nDVRPort, LDWORD dwUser)
 {
-    LOG(INFO) << "Camera disconnect";
+    LOG(ERROR) << "AutoConnectFunc...";
 }
 
 bool Camera::Open(std::string ip)
 {
-    LOG(INFO) << "open camera";
-
     //NET_DEVICEINFO deviceInfo = {0};
 
-    CLIENT_Init(DisConnectFunc, 0);
+    BOOL bRet = CLIENT_Init(DisConnectFunc, 0);
+    if (!bRet)
+    {
+        LOG(ERROR) << "Initialize SDK failed";
+        return false;
+    }
+
     CLIENT_SetAutoReconnect(AutoConnectFunc, 0);
+
+    LOG(INFO) << "Initialize SDK success";
 
     return true;
 }

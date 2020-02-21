@@ -32,6 +32,7 @@ int HExit()
 
 int main(int argc, char const *argv[])
 {
+    if(false){ std::cout<<el::base::consts::kPerformanceLoggerId<<std::endl; }
     initlog();
     LOG(INFO) << "=====================================";
     LOG(INFO) << "=========== program start ===========";

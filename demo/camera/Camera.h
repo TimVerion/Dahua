@@ -7,14 +7,12 @@ namespace camera
 class Camera
 {
 private:
+    static void CALLBACK DisConnectFunc(LLONG lLoginID, char *pchDVRIP, LONG nDVRPort, LDWORD dwUser);
+    static void CALLBACK AutoConnectFunc(LLONG lLoginID, char *pchDVRIP, LONG nDVRPort, LDWORD dwUser);
+
 public:
     Camera();
     ~Camera();
-
-    static void CALLBACK DisConnectFunc(LONG lLoginID, char *pchDVRIP,
-                                 LONG nDVRPort, DWORD dwUser);
-    static void CALLBACK AutoConnectFunc(LONG lLoginID, char *pchDVRIP,
-                                  LONG nDVRPort, DWORD dwUser);
 
     bool Open(std::string ip);
 };
